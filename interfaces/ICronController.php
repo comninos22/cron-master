@@ -1,9 +1,9 @@
 <?php
 interface ICronController
 {
-    static function addCron($params);
-    static function deleteCron($params);
-    static function editCron($params);
-    static function getCrons($params);
-    static function changeStatus($params);
+    static function addCron(Request $params);
+    static function deleteCron(Request $params);
+    static function editCron(Request $params);
+    static function getCrons(Request $params);
+    static function changeStatus(Request $params);
 }

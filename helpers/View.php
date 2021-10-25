@@ -6,19 +6,18 @@ class View
     private $data = array();
 
     private $render = FALSE;
-    private $template;
-    public function __construct($template, $withMainView)
+
+    public function __construct($template, $withMainView, $prefix = false)
     {
         try {
-            $file = ROOT . '/views/' . strtolower($template) . '.php';
-
+            $template = str_replace("/", "\\", $template);
+            $file = ROOT . '/views/' . ($prefix ? $prefix . "/" : "") .  strtolower($template) . '.php';
             if (file_exists($file)) {
                 if ($withMainView) {
-                    var_dump($file);
                     $this->data["subView"] = $file;
                     $this->render = ROOT . '/views/MainView.php';
                 } else {
-                    $this->render = $template;
+                    $this->render = $file;
                 }
             } else {
                 throw new Exception('View ' . $template . ' not found!');

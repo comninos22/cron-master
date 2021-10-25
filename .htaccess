@@ -1,5 +1,8 @@
-Options +FollowSymLinks
-RewriteEngine on
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule . index.php [L]
+# Turn On ReWrite Engine
+RewriteEngine On
+
+# Exclude url.php and index.php from redirecting
+RewriteCond %{REQUEST_URI} !^/(index).php
+RewriteCond %{REQUEST_URI} !/public
+# Redirect to url.php
+RewriteRule . index.php [NC,L]

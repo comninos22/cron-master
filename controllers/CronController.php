@@ -1,22 +1,25 @@
 
 <?php
-require_once(ROOT."/interfaces/ICronController.php");
+require_once(ROOT . "/interfaces/ICronController.php");
 class CronController implements ICronController
 {
 
-    static function getCrons($params)
+    static function getCrons(Request $params)
+    {
+        return new View("CronView", true);
+    }
+    static function addCron(Request $params)
+    {
+        return new View("CronView", true);
+    }
+    static function deleteCron(Request $params)
     {
     }
-    static function addCron($params)
+    static function editCron(Request $params)
     {
+        return new View("CronView", true);
     }
-    static function deleteCron($params)
-    {
-    }
-    static function editCron($params)
-    {
-    }
-    static function changeStatus($params)
+    static function changeStatus(Request $params)
     {
     }
 }

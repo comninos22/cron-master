@@ -3,66 +3,74 @@ require_once(ROOT . "/controllers/CronController.php");
 require_once(ROOT . "/controllers/UserController.php");
 require_once(ROOT . "/controllers/CronLogController.php");
 require_once(ROOT . "/helpers/View.php");
+require_once(ROOT . "/helpers/Request.php");
 
-
-$method = $_SERVER["REQUEST_METHOD"];
-$path = $_SERVER["REQUEST_URI"];
-$path = explode("/", $path);
-$path = array_slice($path, 2);
-$inputJSON = file_get_contents('php://input');
-$input = json_decode($inputJSON, TRUE);
-$params = [
-    "GET" => $_GET,
-    "BODY" => $input,
-    "POST" => $_POST,
-];
-switch (array_shift($path)) {
-    case "auth":
-        switch (array_shift($path)) {
-            case "login":
-                switch ($method) {
-                    case "GET":
-                        new View("LoginView", true);
-                        break;
-                    case "POST":
-                        UserController::loginUser($params);
-                        break;
-                }
-        }
-        break;
-    case "cron":
-        checkSession();
-        switch ($method) {
-            case "GET":
-                CronController::getCrons($params);
-                break;
-            case "POST":
-                CronController::addCron($params);
-                break;
-            case "DELETE":
-                CronController::deleteCron($params);
-                break;
-            case "PATCH":
-                CronController::editCron($params);
-                break;
-        }
-        break;
-    case "cron-logs":
-        checkSession();
-        switch ($method) {
-            case "GET":
-                CronLogController::getLogs($params);
-                break;
-            case "POST":
-                CronLogController::insertLog($params);
-                break;
-        }
-        break;
+$request = new Request();
+try {
+    switch (array_shift($request->PATH)) {
+        case "auth":
+            switch (array_shift($request->PATH)) {
+                case "login":
+                    switch ($request->METHOD) {
+                        case "GET":
+                            return new View("LoginView", true);
+                        case "POST":
+                            return UserController::loginUser($request);
+                    }
+                case "register":
+                    checkSession();
+                    switch ($request->METHOD) {
+                        case "GET":
+                            return new View("RegisterView", true);
+                        case "POST":
+                            return UserController::registerUser($request);
+                    }
+                case "logout":
+                    return UserController::logoutUser($request);
+            }
+        case "cron":
+            checkSession();
+            switch ($request->METHOD) {
+                case "GET":
+                    return CronController::getCrons($request);
+                case "POST":
+                    return CronController::addCron($request);
+                case "DELETE":
+                    return CronController::deleteCron($request);
+                case "PATCH":
+                    return CronController::editCron($request);
+            }
+        case "cron-logs":
+            checkSession();
+            switch ($request->METHOD) {
+                case "GET":
+                    return CronLogController::getLogs($request);
+                case "POST":
+                    return CronLogController::insertLog($request);
+            }
+        default:
+            http_response_code(404);
+            return new View("404", false, "errors");
+    }
+} catch (Exception $e) {
+    switch (get_class($e)) {
+        case "VerificationException": {
+                return new View("LoginView", true);
+            }
+    }
 }
+
 
 function checkSession()
 {
     if (!isset($_SESSION["user"])) {
-        return new View("LoginView", true);
+        throw new VerificationException("Invalidated");
+    }
+}
+class VerificationException extends Exception
+{
+    function __construct($m)
+    {
+        parent::__construct($m);
     }
 }

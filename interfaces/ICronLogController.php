@@ -1,6 +1,6 @@
 <?php
 interface ICronLogController
 {
-    static function insertLog($params);
-    static function getLogs($params);
+    static function insertLog(Request $params);
+    static function getLogs(Request $params);
 }
